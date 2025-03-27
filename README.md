@@ -1,0 +1,1 @@
+# React + TypeScript + Vite + MaterialUI + Supabase
