@@ -1,4 +1,7 @@
 import type { PaletteOptions } from "@mui/material"
+import { ThemeOptions, createTheme } from "@mui/material/styles";
+
+const defaultTheme = createTheme(); 
 
 // Light theme palette
 const lightPalette: PaletteOptions = {
@@ -210,20 +213,22 @@ const components = {
 }
 
 // Complete theme objects
-export const lightTheme = {
+export const lightTheme = createTheme ({
   palette: lightPalette,
   typography,
   components,
   shape: {
     borderRadius: 8,
   },
+  // "rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px",
   shadows: [
-    "none",
-    ...Array(24).fill("0px 2px 4px rgba(0, 0, 0, 0.1)"), // Asegura que sean 25 sombras
+    "none", // Sombra 0 (sin sombra)
+    "rgba(0, 0, 0, 0) 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px",
+    ...defaultTheme.shadows.slice(2), // Mantiene el resto de sombras originales de MUI
   ],
-}
+} as ThemeOptions )
 
-export const darkTheme = {
+export const darkTheme = createTheme({
   palette: darkPalette,
   typography,
   components: {
@@ -253,5 +258,5 @@ export const darkTheme = {
     "none",
     ...Array(24).fill("0px 2px 4px rgba(0, 0, 0, 0.2)"),
   ],
-}
+} as ThemeOptions)
 

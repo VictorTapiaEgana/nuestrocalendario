@@ -12,36 +12,46 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 
-import {  Link } from 'react-router-dom'
+import Diversity3Icon from '@mui/icons-material/Diversity3';
+
+import {  Link, useLocation } from 'react-router-dom'
 import { WrapperProps } from '../../types/type';
 import NavBar from '../NavBar/NavBar';
 import sideMenu  from '../../SideMenu/SideMenu'
-import { ListItemText } from '@mui/material';
+import { ListItemText, Typography } from '@mui/material';
+import { useThemeStore } from '../../store/useThemeStore';
+import BottomDrawer from '../BottomDrawer/BottomDrawer';
+import { useBottomDrawerStore } from '../../store/useBottomDrawerStore';
 
 const drawerWidth = 240;
+const miniDrawerWidth = 60; // Ancho cuando está cerrado
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean;
-}>(({ theme }) => ({
+}>(({ theme, open }) => ({
   flexGrow: 1,
   padding: theme.spacing(3),
-  transition: theme.transitions.create('margin', {
+  transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
+    duration: theme.transitions.duration.enteringScreen,
   }),
-  marginLeft: `-${drawerWidth}px`,
-  variants: [
-    {
-      props: ({ open }) => open,
-      style: {
-        transition: theme.transitions.create('margin', {
-          easing: theme.transitions.easing.easeOut,
-          duration: theme.transitions.duration.enteringScreen,
-        }),
-        marginLeft: 0,
-      },
-    },
-  ],
+  width: `calc(100% - ${open ? drawerWidth : miniDrawerWidth}px)`, // Ajusta ancho en vez de usar margin
+}));
+
+const DrawerStyled = styled(Drawer)(({ theme, open }) => ({
+  width: open ? drawerWidth : miniDrawerWidth,
+  flexShrink: 0,    
+  whiteSpace: 'nowrap',
+  overflowX: 'hidden',  
+  '& .MuiDrawer-paper': {
+    width: open ? drawerWidth : miniDrawerWidth,    
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    overflowX: 'hidden',
+    borderRight: 'none',
+  },
 }));
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -53,78 +63,99 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
+
 const Layout: React.FC<WrapperProps> = ({ children }) => {
 
   const theme = useTheme();
+  const { darkMode } = useThemeStore()
+  const location = useLocation();
+  const { openBottomDrawerManually, closeBottomDrawer } = useBottomDrawerStore(); 
+
   const [open, setOpen] = React.useState(false);
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
+
+
+  const handleDrawerToggle = () => {
+    setOpen((prev) => !prev);
   };
 
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
+
+  React.useEffect(() => {
+    if (location.pathname === '/addevento') {
+      openBottomDrawerManually(); // Abre el Drawer de Bottom
+    } else {
+      closeBottomDrawer(); // Cierra el Drawer si estamos en otra ruta
+    }
+  }, [location, openBottomDrawerManually, closeBottomDrawer]);
+
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <CssBaseline />        
-        <NavBar handleDrawerOpen={handleDrawerOpen} open={open} />
-      <Drawer
-        sx={{           
-          width: drawerWidth,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
-          },
-        }}
-        variant="persistent"
-        anchor="left"
-        open={open}
-      >
-        <DrawerHeader >
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon sx={{ color: theme.palette.text.primary, }} /> : <ChevronRightIcon sx={{ color: theme.palette.text.primary, }}/>}
-          </IconButton>
+      <CssBaseline />
+      <NavBar handleDrawerOpen={handleDrawerToggle} open={open} />
+      
+      {/* Drawer ajustado */}
+      <DrawerStyled variant="permanent" open={open}>
+        <DrawerHeader> 
+              <Typography variant="h6" noWrap component="div">
+                  <Diversity3Icon sx={{position:'relative',top:'4px',marginRight:'5px', opacity: open ? 1 : 0}}/> 
+                  Nuestro Calendario
+              </Typography>
+
+             <IconButton onClick={handleDrawerToggle}>
+                {open ? <ChevronLeftIcon sx={{ color: theme.palette.text.primary }} /> : <ChevronRightIcon sx={{ color: theme.palette.text.primary }} />}
+              </IconButton>
+
         </DrawerHeader>
-        <Divider />
+
+        {
+          darkMode 
+          ? <Divider />
+          : <br/>
+        }
+
         <List>
+          {sideMenu.map((menu, index) => {
+            const IconComponent = menu.icono;
+            return (
+              <React.Fragment key={index + menu.nombre}>
+                  { 
+                   menu.nombre ==='Divider' 
+                   ? darkMode ? <Divider key={index + menu.nombre}/> : <br key={index + menu.nombre}/>
+                   : <ListItem key={index} disablePadding sx={{ display: 'block' }}>
+                      <ListItemButton
+                        component={Link}
+                        to={menu.link}
+                        sx={{
+                          justifyContent: open ? 'initial' : 'center',
+                          px: 2.5,
+                          color: theme.palette.text.primary,                          
+                        }}
+                      >
+                        <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center', color: theme.palette.text.primary }}>
+                          <IconComponent />
+                        </ListItemIcon>
+                        <ListItemText primary={menu.nombre} sx={{ opacity: open ? 1 : 0, whiteSpace: 'nowrap', color: theme.palette.text.primary, fontSize:'30px'}} />
+                      </ListItemButton>
+                     </ListItem>
+                   }
 
-            {
-                sideMenu.map((menu,index)=>{
+              </React.Fragment>
+              
 
-                    const IconComponent = menu.icono; 
-
-                    return(
-                        <>
-                            {
-                                menu.nombre ==='Divider' 
-                                ? <Divider />
-                                : <ListItem key={index}>                            
-                                    <ListItemButton component={Link} to={menu.link}> 
-                                        <ListItemIcon>                                                                        
-                                                <IconComponent sx={{ color: theme.palette.text.primary }}/>
-                                        </ListItemIcon>
-                                        <ListItemText primary={menu.nombre}/>                            
-                                    </ListItemButton>                                                                                                              
-                                </ListItem>
-                            }                        
-                        
-                         </>                          
-                    )
-                })
-            }
-        
+            );
+          })}
         </List>
+      </DrawerStyled>
 
-      </Drawer>
+      {/* Contenido principal ajustado */}
       <Main open={open}>
-        <DrawerHeader />        
-            { children }          
+        <DrawerHeader />
+        {children}
       </Main>
+      <BottomDrawer />
     </Box>
   );
-}
+};
 
 export default Layout;
