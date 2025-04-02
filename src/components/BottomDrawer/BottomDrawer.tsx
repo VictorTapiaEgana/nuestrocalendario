@@ -10,7 +10,7 @@ import dayjs, { Dayjs } from "dayjs";
 
 import './BottomDrawer.css'
 
-import { useForm } from 'react-hook-form';
+import { useForm,SubmitHandler  } from 'react-hook-form';
 import { DatePicker } from '@mui/x-date-pickers';
 
 dayjs.locale("es");
@@ -19,24 +19,35 @@ type FormData = {
     nomEvento: string;
     descEvento: string;
     cateEvento: string;
-    
+    tipoEvento:string    
 };
+
+type  categoriProps = {
+    id:number,
+    categoria:string
+}
+
+type tipoProps = {
+   id:number,
+   nombre:string,
+   descripcion:string,
+   id_categoria:number
+}
 
 const BottomDrawer: React.FC = () => {
 
   const { openBottomDrawer, closeBottomDrawer } = useBottomDrawerStore(); 
 
-  const { register, handleSubmit, formState:{ errors}} = useForm();
+  const { register, handleSubmit, formState:{ errors}} = useForm<FormData>();
   const [ selectDate, setSelectDate ] =useState<Dayjs | null>(dayjs());
   const [ allday, setallday ] = useState<boolean>(false)
-  const [ categorias, setCategorias ] = useState<string[]>([])
-  const [ tipos, setTipos ] = useState<string[]>([])
+  const [ categorias, setCategorias ] = useState<categoriProps[]>([])
+  const [ tipos, setTipos ] = useState<tipoProps[]>([])
 
   const theme = useTheme(); 
   const isXs = useMediaQuery(theme.breakpoints.only("xs"));
   const isSm = useMediaQuery(theme.breakpoints.only("sm"));
   const elevation = isXs || isSm ? 0 : 20;
-
 
   const fetchTipoEvento = async() =>{
 
@@ -73,7 +84,7 @@ const BottomDrawer: React.FC = () => {
   
   },[])  
   
-  const handleAddEvento = (data:FormData) =>{
+  const handleAddEvento:SubmitHandler<FormData> = (data) =>{
     console.log(data)
     closeBottomDrawer()
   }
