@@ -13,6 +13,7 @@ import './BottomDrawer.css'
 import { useForm,SubmitHandler  } from 'react-hook-form';
 import { DatePicker } from '@mui/x-date-pickers';
 import { categoriProps, DatosEvento, FormDataEventos, tipoProps } from '../../types/type';
+import { useUserStore } from '../../store/useUserStore';
 
 dayjs.locale("es");
 
@@ -74,6 +75,7 @@ const BottomDrawer: React.FC = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])  
   
+  const { usuario } = useUserStore()
   const handleAddEvento:SubmitHandler<FormDataEventos> = async(data) =>{
     
     const DatosEvento:DatosEvento = {
@@ -84,7 +86,8 @@ const BottomDrawer: React.FC = () => {
                                      tipo:data.tipoEvento,
                                      allDay:allday,
                                      hInicio:data.hInicio,
-                                     hTermino:data.Htermino        
+                                     hTermino:data.Htermino,
+                                     user_id: Number(usuario?.id)
     }    
 
     const resp = await fetch(`http://${VITE_SERVERNAME}/eventos/guadarevento`,{ method:'POST',
@@ -94,18 +97,17 @@ const BottomDrawer: React.FC = () => {
                                                                                 body:JSON.stringify(DatosEvento)
     })
 
-    const respuesta = await resp.json()
+    const respuesta = await resp.json()    
+
     console.log(respuesta)
 
-    SetOpenSnackBar(true)
+            SetOpenSnackBar(true)
 
-    reset()
+            reset()
 
-    closeBottomDrawer()
+            closeBottomDrawer()
 
-  }
-
-
+  } 
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">

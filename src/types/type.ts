@@ -69,5 +69,6 @@ export type DatosEvento ={
     tipo:string;
     allDay:boolean;
     hInicio:string;
-    hTermino:string
+    hTermino:string;
+    user_id:number
 }
