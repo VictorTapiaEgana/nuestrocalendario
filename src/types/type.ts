@@ -37,23 +37,36 @@ export type UserState = {
     usuario: DatosUsuario | null;
     setUser: (user: DatosUsuario) => void;
     logout: () => void;
-  };
+};
 
-  export type FormDataEventos = {
+export type FormDataEventos = {
       nomEvento: string;
       descEvento: string;
       cateEvento: string;
-      tipoEvento:string    
-  };
+      tipoEvento:string;
+      hInicio:string;
+      Htermino:string    
+};
   
-  export type  categoriProps = {
+export type  categoriProps = {
       id:number,
       categoria:string
-  }
+}
   
-  export type tipoProps = {
+export type tipoProps = {
      id:number,
      nombre:string,
      descripcion:string,
      id_categoria:number
-  }
+}
+
+export type DatosEvento ={
+    nombre:string;
+    descripcion:string;
+    fechaEvento:Date | undefined;
+    categoria:string;
+    tipo:string;
+    allDay:boolean;
+    hInicio:string;
+    hTermino:string
+}

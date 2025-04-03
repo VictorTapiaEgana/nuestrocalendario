@@ -12,7 +12,7 @@ import './BottomDrawer.css'
 
 import { useForm,SubmitHandler  } from 'react-hook-form';
 import { DatePicker } from '@mui/x-date-pickers';
-import { categoriProps, FormDataEventos, tipoProps } from '../../types/type';
+import { categoriProps, DatosEvento, FormDataEventos, tipoProps } from '../../types/type';
 
 dayjs.locale("es");
 
@@ -20,7 +20,7 @@ const BottomDrawer: React.FC = () => {
 
   const { openBottomDrawer, closeBottomDrawer } = useBottomDrawerStore(); 
 
-  const { register, handleSubmit, formState:{ errors}} = useForm<FormDataEventos>();
+  const { register, handleSubmit, reset, formState:{ errors}} = useForm<FormDataEventos>();
   const [ selectDate, setSelectDate ] =useState<Dayjs | null>(dayjs());
   const [ allday, setallday ] = useState<boolean>(false)
   const [ categorias, setCategorias ] = useState<categoriProps[]>([])
@@ -67,8 +67,24 @@ const BottomDrawer: React.FC = () => {
   },[])  
   
   const handleAddEvento:SubmitHandler<FormDataEventos> = (data) =>{
-    console.log(data)
+    
+    const DatosEvento:DatosEvento = {
+        nombre:data.nomEvento,
+        descripcion:data.descEvento,
+        fechaEvento:selectDate?.toDate(),
+        categoria:data.cateEvento,
+        tipo:data.tipoEvento,
+        allDay:allday,
+        hInicio:data.hInicio,
+        hTermino:data.Htermino        
+    }
+
+    console.table(DatosEvento)
+
+    reset()
+
     closeBottomDrawer()
+
   }
 
 
@@ -188,19 +204,23 @@ const BottomDrawer: React.FC = () => {
                             </Box>
 
                             {
-                                    !allday && (
-                                        <Box sx={{ display:'flex', justifyContent:'center',gap:'10px'}}>
-                                            <Box textAlign={'center'}>
-                                                <Typography sx={{fontWeight:'600'}}> Hora inicio</Typography>    
-                                                <TextField type='time' value={'08:00:00'}/>
-                                            </Box>
-                                            
-                                            <Box textAlign={'center'}>
-                                                <Typography sx={{fontWeight:'600'}}>Hora termino</Typography>    
-                                                <TextField type='time' value={'15:30:00'}/>
-                                            </Box>                                                        
+                                !allday && (
+                                    <Box sx={{ display:'flex', justifyContent:'center',gap:'10px'}}>
+                                        <Box textAlign={'center'}>
+                                            <Typography sx={{fontWeight:'600'}}> Hora inicio</Typography>    
+                                            <TextField type='time' defaultValue={'08:00'}
+                                                {...register('hInicio')}
+                                            />
                                         </Box>
-                                    )
+                                        
+                                        <Box textAlign={'center'}>
+                                            <Typography sx={{fontWeight:'600'}}>Hora termino</Typography>    
+                                            <TextField type='time' defaultValue={'15:30'}
+                                                {...register('Htermino')}
+                                            />
+                                        </Box>                                                        
+                                    </Box>
+                                )
                             }
                         
                     </Box>
