@@ -26,6 +26,7 @@ export type userLoginProps ={
 }
 
 export type DatosUsuario = {
+  id:number,
   nombre:string,
   correo:string,
   contrasena:string,

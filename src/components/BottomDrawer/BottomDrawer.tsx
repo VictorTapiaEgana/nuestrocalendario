@@ -1,6 +1,6 @@
 // BottomDrawer.tsx
 import React, { useEffect, useState } from 'react';
-import { Drawer, Button, Typography, Box, TextField, Checkbox, FormGroup, FormControlLabel, Paper, useMediaQuery, useTheme, Autocomplete } from '@mui/material';
+import { Drawer, Button, Typography, Box, TextField, Checkbox, FormGroup, FormControlLabel, Paper, useMediaQuery, useTheme, Autocomplete, Snackbar } from '@mui/material';
 import { useBottomDrawerStore } from '../../store/useBottomDrawerStore' 
 
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -20,20 +20,27 @@ const BottomDrawer: React.FC = () => {
 
   const { openBottomDrawer, closeBottomDrawer } = useBottomDrawerStore(); 
 
-  const { register, handleSubmit, reset, formState:{ errors}} = useForm<FormDataEventos>();
+  const { register, handleSubmit, watch, reset, setValue, formState:{ errors}} = useForm<FormDataEventos>();
   const [ selectDate, setSelectDate ] =useState<Dayjs | null>(dayjs());
   const [ allday, setallday ] = useState<boolean>(false)
   const [ categorias, setCategorias ] = useState<categoriProps[]>([])
   const [ tipos, setTipos ] = useState<tipoProps[]>([])
+  const [ openSnackBar , SetOpenSnackBar ] = useState<boolean>(false)
+
+  
+  const selectedCategory = watch("cateEvento");
+  const selectedtipo = watch("tipoEvento");
 
   const theme = useTheme(); 
   const isXs = useMediaQuery(theme.breakpoints.only("xs"));
   const isSm = useMediaQuery(theme.breakpoints.only("sm"));
   const elevation = isXs || isSm ? 0 : 20;
 
+  const { VITE_SERVERNAME } = import.meta.env
+
   const fetchTipoEvento = async() =>{
 
-    const resp = await fetch(`http://${import.meta.env.VITE_SERVERNAME}/eventos/gettipos/`)
+    const resp = await fetch(`http://${VITE_SERVERNAME}/eventos/gettipos/`)
     const data = await resp.json()
 
     setTipos(data.data)
@@ -42,7 +49,7 @@ const BottomDrawer: React.FC = () => {
 
   const fetchCategoriasEvento = async() =>{
 
-    const resp = await fetch(`http://${import.meta.env.VITE_SERVERNAME}/eventos/getcategorias/`)
+    const resp = await fetch(`http://${VITE_SERVERNAME}/eventos/getcategorias/`)
     const data = await resp.json()
 
     setCategorias(data.data)
@@ -64,29 +71,39 @@ const BottomDrawer: React.FC = () => {
     fetchCateg()   
     fetchTipo()
   
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])  
   
-  const handleAddEvento:SubmitHandler<FormDataEventos> = (data) =>{
+  const handleAddEvento:SubmitHandler<FormDataEventos> = async(data) =>{
     
     const DatosEvento:DatosEvento = {
-        nombre:data.nomEvento,
-        descripcion:data.descEvento,
-        fechaEvento:selectDate?.toDate(),
-        categoria:data.cateEvento,
-        tipo:data.tipoEvento,
-        allDay:allday,
-        hInicio:data.hInicio,
-        hTermino:data.Htermino        
-    }
+                                     nombre:data.nomEvento,
+                                     descripcion:data.descEvento,
+                                     fechaEvento:selectDate?.toDate(),
+                                     categoria:data.cateEvento,
+                                     tipo:data.tipoEvento,
+                                     allDay:allday,
+                                     hInicio:data.hInicio,
+                                     hTermino:data.Htermino        
+    }    
 
-    console.table(DatosEvento)
+    const resp = await fetch(`http://${VITE_SERVERNAME}/eventos/guadarevento`,{ method:'POST',
+                                                                                headers:{
+                                                                                        'Content-Type': 'application/json'
+                                                                                },
+                                                                                body:JSON.stringify(DatosEvento)
+    })
+
+    const respuesta = await resp.json()
+    console.log(respuesta)
+
+    SetOpenSnackBar(true)
 
     reset()
 
     closeBottomDrawer()
 
   }
-
 
 
 
@@ -155,13 +172,15 @@ const BottomDrawer: React.FC = () => {
                                 disablePortal
                                 options={categorias}
                                 getOptionLabel={(option) => String(option.categoria) || ""}
-                                 sx={{ width: "100%" }}
+                                onChange={(event, value) => setValue("cateEvento", value ? String(value.id) : "")}
+                                sx={{ width: "100%" }}
                                 renderInput={(params) => <TextField {...params}  
                                                           fullWidth 
                                                           placeholder='Laboral, educación, salud . . . '
                                                           error= { !! errors.cateEvento }
                                                           helperText = { errors.cateEvento ? String(errors.cateEvento.message) : '' }  
-                                                          {...register('cateEvento',{required:'seleccione categoria'})}
+                                                          value={ selectedCategory}
+                                                        //   {...register('cateEvento',{required:'seleccione categoria'})}
                                                           /> }
                             />                                               
                             
@@ -175,13 +194,16 @@ const BottomDrawer: React.FC = () => {
                                 disablePortal
                                 options={tipos}
                                 getOptionLabel={(option) => String(option.nombre) || ""}
-                                 sx={{ width: "100%" }}
+                                onChange={(event, value) => setValue("tipoEvento", value ? String(value.id) : "")}
+                                sx={{ width: "100%" }}
                                 renderInput={(params) => <TextField {...params} 
                                                          fullWidth 
                                                          placeholder='Tarea, trabajo, reunión'
                                                          error={!!errors.tipoEvento}
                                                          helperText = { errors.tipoEvento ? String(errors.tipoEvento.message) : "" } 
-                                                         {...register('tipoEvento',{required:'Seleccione tipo'})} />
+                                                         value={selectedtipo}
+                                                        //  {...register('tipoEvento',{required:'Seleccione tipo'})} 
+                                                         />
                                             }
                             />                                               
                             
@@ -239,6 +261,14 @@ const BottomDrawer: React.FC = () => {
            </Box>
       
         </Drawer>
+        
+        <Snackbar
+            open={openSnackBar}
+            autoHideDuration={6000}
+            onClose={()=>SetOpenSnackBar(false)}
+            message="Evento Guardado ❤"
+            // action={action}
+        />
     </LocalizationProvider>
   );
 };

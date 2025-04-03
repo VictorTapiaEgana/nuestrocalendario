@@ -14,12 +14,8 @@ const Login = () => {
     const [ errores, setErrores ] = useState<string>('')
 
     const { VITE_SERVERNAME } = import.meta.env
-
-    console.log(VITE_SERVERNAME)
-
     
     const navigate= useNavigate()
-
     
     const fetchTest = async (correo:string, contrasena:string) =>{
 
