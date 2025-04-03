@@ -12,33 +12,15 @@ import './BottomDrawer.css'
 
 import { useForm,SubmitHandler  } from 'react-hook-form';
 import { DatePicker } from '@mui/x-date-pickers';
+import { categoriProps, FormDataEventos, tipoProps } from '../../types/type';
 
 dayjs.locale("es");
-
-type FormData = {
-    nomEvento: string;
-    descEvento: string;
-    cateEvento: string;
-    tipoEvento:string    
-};
-
-type  categoriProps = {
-    id:number,
-    categoria:string
-}
-
-type tipoProps = {
-   id:number,
-   nombre:string,
-   descripcion:string,
-   id_categoria:number
-}
 
 const BottomDrawer: React.FC = () => {
 
   const { openBottomDrawer, closeBottomDrawer } = useBottomDrawerStore(); 
 
-  const { register, handleSubmit, formState:{ errors}} = useForm<FormData>();
+  const { register, handleSubmit, formState:{ errors}} = useForm<FormDataEventos>();
   const [ selectDate, setSelectDate ] =useState<Dayjs | null>(dayjs());
   const [ allday, setallday ] = useState<boolean>(false)
   const [ categorias, setCategorias ] = useState<categoriProps[]>([])
@@ -84,7 +66,7 @@ const BottomDrawer: React.FC = () => {
   
   },[])  
   
-  const handleAddEvento:SubmitHandler<FormData> = (data) =>{
+  const handleAddEvento:SubmitHandler<FormDataEventos> = (data) =>{
     console.log(data)
     closeBottomDrawer()
   }
