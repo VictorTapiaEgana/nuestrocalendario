@@ -1,9 +1,11 @@
 import { sideMenuProps } from "../types/type"
 
 import HomeIcon from '@mui/icons-material/Home';
-import EventAvailableIcon from '@mui/icons-material/EventAvailable';
-import EventBusyIcon from '@mui/icons-material/EventBusy';
+// import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+// import EventBusyIcon from '@mui/icons-material/EventBusy';
 import LogoutIcon from '@mui/icons-material/Logout';
+import EventNoteIcon from '@mui/icons-material/EventNote';
+
 import Divider from '@mui/material/Divider';
 
 const sideMenu:sideMenuProps[] = [
@@ -13,15 +15,17 @@ const sideMenu:sideMenuProps[] = [
                                         link:'/inicio'
                                     },
                                     {
-                                        nombre:'Agregar Evento',
-                                        icono:EventAvailableIcon,
-                                        link:'/addevento'
+                                        nombre:'Calendario',
+                                        icono:EventNoteIcon,
+                                        link:'/calendario'
                                     },
-                                    {
-                                        nombre:'Eliminar Evento',
-                                        icono:EventBusyIcon,
-                                        link:'/delevento'
-                                    },
+
+                                    // {
+                                    //     nombre:'Eliminar Evento',
+                                    //     icono:EventBusyIcon,
+                                    //     link:'/delevento'
+                                    // }
+
                                     {
                                         nombre:'Divider',
                                         icono:Divider ,

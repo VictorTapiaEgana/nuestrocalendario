@@ -176,7 +176,7 @@ const BottomDrawer: React.FC = () => {
                                 getOptionLabel={(option) => String(option.categoria) || ""}
                                 onChange={(_event, value) => setValue("cateEvento", value ? String(value.id) : "")}
                                 sx={{ width: "100%" }}
-                                renderInput={(params) => <TextField {...params}  
+                                renderInput={(params) => <TextField { ...params }  
                                                           fullWidth 
                                                           placeholder='Laboral, educación, salud . . . '
                                                           error= { !! errors.cateEvento }
