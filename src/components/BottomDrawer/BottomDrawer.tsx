@@ -252,9 +252,15 @@ const BottomDrawer: React.FC = () => {
                 </Box>             
                     
                <Box textAlign={'center'}>                     
+                  
+                    <Button variant="contained" color="secondary" fullWidth sx={{margin:'30px', width:'270px'}} onClick={()=>closeBottomDrawer()}>
+                        Cancelar
+                    </Button> 
+
                     <Button variant="contained" color="primary" type='submit' sx={{margin:'30px 0', width:'270px'}} >
                         + Agregar evento
-                    </Button>
+                    </Button>                    
+
                </Box>
                 
 
