@@ -174,7 +174,7 @@ const BottomDrawer: React.FC = () => {
                                 disablePortal
                                 options={categorias}
                                 getOptionLabel={(option) => String(option.categoria) || ""}
-                                onChange={(event, value) => setValue("cateEvento", value ? String(value.id) : "")}
+                                onChange={(_event, value) => setValue("cateEvento", value ? String(value.id) : "")}
                                 sx={{ width: "100%" }}
                                 renderInput={(params) => <TextField {...params}  
                                                           fullWidth 
@@ -196,7 +196,7 @@ const BottomDrawer: React.FC = () => {
                                 disablePortal
                                 options={tipos}
                                 getOptionLabel={(option) => String(option.nombre) || ""}
-                                onChange={(event, value) => setValue("tipoEvento", value ? String(value.id) : "")}
+                                onChange={(_event, value) => setValue("tipoEvento", value ? String(value.id) : "")}
                                 sx={{ width: "100%" }}
                                 renderInput={(params) => <TextField {...params} 
                                                          fullWidth 
