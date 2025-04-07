@@ -84,6 +84,10 @@ const Calendario = () => {
         alert(arg.dateStr)
     }
 
+   const EstiloBotones = {
+      color: darkMode ? 'black' : 'white',
+      backgroundColor: darkMode  ? '#F5F5F5': 'default'
+   }
 
 
   return (
@@ -97,9 +101,9 @@ const Calendario = () => {
                        flexDirection:{xs:'column',sm:'row'}}}>
 
                 <Box sx={{display:{xs:'none',sm:'flex'},gap:'5px'}}>
-                     <Button variant='contained' sx={{color: darkMode ? 'white' : 'black'}} onClick={handlePrev} className="">←</Button>
-                     <Button variant='contained' sx={{color: darkMode ? 'white' : 'black',background:'black'}} onClick={handleToday} className="">Hoy</Button>
-                     <Button variant='contained' sx={{color: darkMode ? 'white' : 'black',background:'black'}} onClick={handleNext} className="">→</Button>
+                     <Button variant='contained' sx={EstiloBotones} onClick={handlePrev} className="">←</Button>
+                     <Button variant='contained' sx={EstiloBotones} onClick={handleToday} className="">Hoy</Button>
+                     <Button variant='contained' sx={EstiloBotones} onClick={handleNext} className="">→</Button>
                 </Box>
 
                 <Box> 
@@ -109,9 +113,9 @@ const Calendario = () => {
                 </Box>
 
                 <Box sx={{display:'flex',gap:'5px'}}>
-                     <Button variant='contained' sx={{color: darkMode ? 'white' : 'black',background:'black'}} onClick={() => changeView('timeGridDay')} >Día</Button>
-                     <Button variant='contained' sx={{color: darkMode ? 'white' : 'black',background:'black'}} onClick={() => changeView('timeGridWeek')} >Semana</Button>
-                     <Button variant='contained' sx={{color: darkMode ? 'white' : 'black',background:'black'}} onClick={() => changeView('dayGridMonth')} >Mes</Button>
+                     <Button variant='contained' sx={EstiloBotones} onClick={() => changeView('timeGridDay')} >Día</Button>
+                     <Button variant='contained' sx={EstiloBotones} onClick={() => changeView('timeGridWeek')} >Semana</Button>
+                     <Button variant='contained' sx={EstiloBotones} onClick={() => changeView('dayGridMonth')} >Mes</Button>
                 </Box>
 
             </Box>
