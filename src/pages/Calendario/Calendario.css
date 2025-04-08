@@ -9,3 +9,19 @@
     overflow-x: auto;
   } */
   
+  .fc-list-event-dot {
+    display: none !important;
+  } 
+
+  .fc-list-event-graphic  {
+    display: none !important;
+  }
+
+  .fc-list-event-title{
+    padding: 0 !important;
+  }
+
+  .fc-list-event-time{
+    padding: 0 !important;
+    padding-left: 5px !important;
+  }

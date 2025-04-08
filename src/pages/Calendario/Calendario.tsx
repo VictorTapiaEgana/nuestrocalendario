@@ -14,6 +14,7 @@ import { useThemeStore } from '../../store/useThemeStore'
 import './Calendario.css'
 import { EventoBackend, EventoCalendario } from '../../types/type'
 import VistaMensual from './Vistas/VistaMensual';
+import ListaDiaria from './Vistas/ListaDiaria';
 
 type DateClickArg = Parameters<NonNullable<React.ComponentProps<typeof FullCalendar>['dateClick']>>[0];
 type DatesSetArg = Parameters<NonNullable<React.ComponentProps<typeof FullCalendar>['datesSet']>>[0];
@@ -104,13 +105,13 @@ const Calendario = () => {
 
    useEffect(()=>{
 
-      localStorage.setItem('showWeekends', showWeekends.toString());
-      console.log(showWeekends)
+      localStorage.setItem('showWeekends', showWeekends.toString());      
 
    },[showWeekends])
 
     useEffect(() => {
-        const handleResize = () => {
+
+        const handleResize = () => {                  
 
           const mobile = window.innerWidth < 500;
           setIsMobile(mobile);
@@ -228,18 +229,26 @@ const Calendario = () => {
 
                         eventContent={(arg) => {
                            
-                           const VistaActual = calendarRef.current?.getApi().view.type;
+                           const VistaActual = calendarRef.current?.getApi().view.type;                           
 
+                           // vista Mensual 
                            if (VistaActual === 'dayGridMonth') {
-                               VistaMensual(arg)
+                              return (
+                                     VistaMensual(arg)
+                              )
                            }
 
-                           // return (
-                           //     VistaMensual(arg)
-                           // )
+                           //Vista Diaria para Movil 
+                           //TODO: Implememtar solo las Listas para mmodo Mobil
+                           if ( VistaActual === 'listDay'){
+                               return (
+                                     ListaDiaria(arg)
+                               )
+                           
+                            }
                         }}
 
-                           // console.log(calendarRef.current?.getApi().view.type)
+                           
                            
                          
                          
