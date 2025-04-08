@@ -70,5 +70,23 @@ export type DatosEvento ={
     allDay:boolean;
     hInicio:string;
     hTermino:string;
-    user_id:number
+    user_id:number    
 }
+
+export type EventoBackend = {
+   id: number;
+   titulo: string;
+   descripcion: string;
+   fecha: string; 
+   hora_inicio: string; 
+   hora_fin: string;   
+   tipo_evento_id: number;
+   usuario_id: number;
+   ubicacion: string | null;
+   estado: string;
+   created_at: string;
+   updated_at: string;
+   categoria_evento_id: number;
+   todoeldia: boolean;
+   tipo_evento_nombre:string;
+ }

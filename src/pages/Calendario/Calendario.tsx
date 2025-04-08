@@ -4,26 +4,82 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list'
 import timeGridPlugin from '@fullcalendar/timegrid'
 
-
-import interactionPlugin from "@fullcalendar/interaction" // needed for dayClick
+import interactionPlugin from "@fullcalendar/interaction" 
 import esLocale from '@fullcalendar/core/locales/es';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, InputLabel, Typography } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
-import { EventInput } from '@fullcalendar/core/index.js';
 import { useThemeStore } from '../../store/useThemeStore'
 
-//extraccion del Tipo de fullcalendar
+import './Calendario.css'
+import { EventoBackend } from '../../types/type'
+
 type DateClickArg = Parameters<NonNullable<React.ComponentProps<typeof FullCalendar>['dateClick']>>[0];
 type DatesSetArg = Parameters<NonNullable<React.ComponentProps<typeof FullCalendar>['datesSet']>>[0];
-
+ 
 const Calendario = () => {
 
-    const [ eventlist, setEventList ] = useState<EventInput[]>([]);
-    const [currentTitle, setCurrentTitle] = useState('');
-    const [ isMobile , setIsMobile ] = useState<boolean>()  
-    const calendarRef = useRef<FullCalendar>(null);
+   //  const [ eventlist, setEventList ] = useState<EventInput[]>([]);
+   const [ eventlist, setEventList ] = useState<EventoBackend[]>([]);
+   const [currentTitle, setCurrentTitle] = useState('');
+   const [ isMobile , setIsMobile ] = useState<boolean>()  
+   const [ showWeekends, setShowWeekends ] = useState<boolean>(false)
+   const calendarRef = useRef<FullCalendar>(null);
+   const { darkMode } = useThemeStore()
+   const { VITE_SERVERNAME  } = import.meta.env
 
-    const { darkMode } = useThemeStore()
+   function transformarEventosParaFullCalendar(eventos:EventoBackend[]) {
+      return eventos.map(evento => {
+        const fechaBase = evento.fecha.split("T")[0]; 
+        const start = `${fechaBase}T${evento.hora_inicio}`;
+        const end = `${fechaBase}T${evento.hora_fin}`;
+    
+        return {
+               id: evento.id,
+               title: evento.titulo,
+               start,
+               end,
+               allDay: evento.todoeldia,
+               extendedProps: {
+                     descripcion: evento.descripcion,
+                     ubicacion: evento.ubicacion,
+                     estado: evento.estado,
+                     tipo_evento_id: evento.tipo_evento_id,
+                     usuario_id: evento.usuario_id,
+                     categoria_evento_id: evento.categoria_evento_id,
+                     tipo_evento_nombre:evento.tipo_evento_nombre
+          }
+        };
+      });
+   }
+
+   const fecthData  = async (fecha:string) =>{
+
+      const resp = await fetch(`http://${VITE_SERVERNAME}/eventos/${fecha}`,{ method:'GET'})
+
+      const eventos = await resp.json()
+
+      const eventosTransformados = transformarEventosParaFullCalendar(eventos.data);
+
+      setEventList(eventosTransformados);
+
+      return eventos;
+
+   }
+    
+
+   useEffect(()=>{
+
+     const fechaActual = new Date().toLocaleDateString()
+
+     const buscarEventos = async(fecha:string) =>{
+          return await fecthData(fecha)
+     }
+
+     buscarEventos(fechaActual)
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+   },[])
+
 
     useEffect(() => {
         const handleResize = () => {
@@ -43,52 +99,38 @@ const Calendario = () => {
     }, []);
 
 
-   useEffect(()=>{   
 
-    const  newArray:EventInput[] = []
-
-    newArray.push({ title: 'event 1', date: '2025-04-01' })
-    
-    newArray.push({ title: 'event 2', 
-                    date:  '2025-04-02',
-                    start: '2025-04-01T12:30:00',
-                    end:   '2025-04-01T13:30:00' })    
-
-    setEventList(newArray)
-
-   },[])
 
     //BOTONES PERSONALIZADOS
-    const handleToday = () => {
+   const handleToday = () => {
       calendarRef.current?.getApi().today();
-     };
-      
-    const handlePrev = () => {
-       calendarRef.current?.getApi().prev();
-    };
-      
-    const handleNext = () => {
-       calendarRef.current?.getApi().next();
-    };
-      
-    const changeView = (viewName: string) => {
-       calendarRef.current?.getApi().changeView(viewName);
-    };
+   };
+   
+   const handlePrev = () => {
+      calendarRef.current?.getApi().prev();
+   };
+   
+   const handleNext = () => {
+      calendarRef.current?.getApi().next();
+   };
+   
+   const changeView = (viewName: string) => {
+      calendarRef.current?.getApi().changeView(viewName);
+   };
 
-    const handleDatesSet = (arg: DatesSetArg) => {
-        setCurrentTitle(arg.view.title);
-    };
+   const handleDatesSet = (arg: DatesSetArg) => {
+      setCurrentTitle(arg.view.title);
+   };
 
-    //CLICK EN LA FECHA  
-    const handleDateClick = (arg:DateClickArg) => {
-        alert(arg.dateStr)
-    }
+   //CLICK EN LA FECHA  
+   const handleDateClick = (arg:DateClickArg) => {
+      alert(arg.dateStr)
+   }
 
    const EstiloBotones = {
       color: darkMode ? 'black' : 'white',
       backgroundColor: darkMode  ? '#F5F5F5': 'default'
    }
-
 
   return (
 
@@ -117,36 +159,77 @@ const Calendario = () => {
                      <Button variant='contained' sx={EstiloBotones} onClick={() => changeView('timeGridWeek')} >Semana</Button>
                      <Button variant='contained' sx={EstiloBotones} onClick={() => changeView('dayGridMonth')} >Mes</Button>
                 </Box>
+               
+            </Box>              
 
-            </Box>
+            <FormGroup>
+               <FormControlLabel control={<Checkbox value={showWeekends} onChange={()=>{setShowWeekends(!showWeekends)}}/>} label="Mostrar Fines de Semana" />
+            </FormGroup>
 
             <FullCalendar
                         plugins={[ dayGridPlugin, listPlugin, timeGridPlugin, interactionPlugin ]}
-                        weekends= {true}
+                        weekends= {showWeekends}
+                        hiddenDays={[0]}                              
                         ref={calendarRef}
                         initialView= {isMobile ? 'timeGridDay' : 'dayGridMonth'} 
                         timeZone="local"                   
-                        locale={esLocale}    
+                        locale={esLocale}                        
                         datesSet={handleDatesSet}             
-                        height={'100vh'}                                     
+                        height={'100vh'}                                
                         headerToolbar={{
                                         left:'', 
                                         center: '' ,
                                         right:''           
-                                      }}
-                        // right: 'dayGridMonth,timeGridWeek,timeGridDay' 
+                                      }}                        
                         dateClick={handleDateClick}
-                        events={eventlist}
-                        // eventContent={(arg) => {
-                        //     return {
-                        //       domNodes: [
-                        //         // Puedes usar un ícono FontAwesome, SVG o cualquier JSX convertido a DOM
-                        //         Object.assign(document.createElement('div'), {
-                        //           innerHTML: `<span style="color:green;">🟢</span> <strong>${arg.event.title}</strong>`,
-                        //         }),
-                        //       ],
-                        //     };
-                        //   }}
+                        events = { eventlist }
+                        eventClassNames={(arg) => {
+                           return arg.event.allDay ? ['evento-allday'] : [];
+                         }}       
+
+                         eventContent={(arg) => {
+                           // const color = arg.event.allDay ? 'orange' : 'green';
+                           const emoji = arg.event.allDay ? '📅' : '🟢';
+                         
+                           const categoriaNombre = arg.event.extendedProps.tipo_evento_nombre || 'Sin categoría';
+                           const horaInicio = arg.timeText || ''; // texto de la hora ya formateado por FullCalendar
+                         
+                           const container = document.createElement('div');
+                                 container.style.width = '100%';
+                                 container.style.boxSizing = 'border-box';
+                                 container.style.overflow ='hidden';
+                                 container.style.padding = '2px';
+                                 container.style.fontSize = '12px';
+                         
+                           // Línea 1: Categoría
+                           const categoriaDiv = document.createElement('div');
+                                 categoriaDiv.innerText = categoriaNombre;
+                                 categoriaDiv.style.backgroundColor = '#e0e0e0';
+                                 categoriaDiv.style.color = '#333';
+                                 categoriaDiv.style.fontWeight = 'bold';
+                                 categoriaDiv.style.padding = '2px 4px';
+                                 categoriaDiv.style.borderBottom = '1px solid #ccc';
+                         
+                           // Línea 2: Hora + Emoji + Título
+                           const infoDiv = document.createElement('div');
+                                 infoDiv.style.display = 'flex';
+                                 infoDiv.style.alignItems = 'center';
+                                 infoDiv.style.gap = '4px';
+                                 infoDiv.style.padding = '2px 4px';
+                                 infoDiv.innerHTML = `
+                                                      <span>${horaInicio}</span>
+                                                      <span>${emoji}</span>
+                                                      <strong>${arg.event.title}</strong>
+                                                    `;
+                         
+                           container.appendChild(categoriaDiv);
+                           container.appendChild(infoDiv);
+                         
+                           return { domNodes: [container] };
+                         }}
+                         
+                         
+                         
             />
 
      </Box>
