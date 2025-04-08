@@ -32,7 +32,7 @@ const Calendario = () => {
         const fechaBase = evento.fecha.split("T")[0]; 
         const start = `${fechaBase}T${evento.hora_inicio}`;
         const end = `${fechaBase}T${evento.hora_fin}`;
-    
+  
         return {
                id: evento.id,
                title: evento.titulo,
@@ -40,13 +40,16 @@ const Calendario = () => {
                end,
                allDay: evento.todoeldia,
                extendedProps: {
-                     descripcion: evento.descripcion,
-                     ubicacion: evento.ubicacion,
-                     estado: evento.estado,
-                     tipo_evento_id: evento.tipo_evento_id,
-                     usuario_id: evento.usuario_id,
-                     categoria_evento_id: evento.categoria_evento_id,
-                     tipo_evento_nombre:evento.tipo_evento_nombre
+                               descripcion: evento.descripcion,
+                               ubicacion: evento.ubicacion,
+                               estado: evento.estado,
+                               tipo_evento_id: evento.tipo_evento_id,
+                               usuario_id: evento.usuario_id,
+                               categoria_evento_id: evento.categoria_evento_id,
+                               tipo_evento_nombre:evento.tipo_evento_nombre,
+                               categoria_nombre:evento.categoria_nombre,
+                               color:evento.categoria_color,
+                               icono:evento.categoria_icono
           }
         };
       });
@@ -188,8 +191,10 @@ const Calendario = () => {
                          }}       
 
                          eventContent={(arg) => {
+
+                           console.log(arg)
                            // const color = arg.event.allDay ? 'orange' : 'green';
-                           const emoji = arg.event.allDay ? '📅' : '🟢';
+                           // const emoji = arg.event.allDay ? '📅' : '🟢';
                          
                            const categoriaNombre = arg.event.extendedProps.tipo_evento_nombre || 'Sin categoría';
                            const horaInicio = arg.timeText || ''; // texto de la hora ya formateado por FullCalendar
@@ -204,7 +209,8 @@ const Calendario = () => {
                            // Línea 1: Categoría
                            const categoriaDiv = document.createElement('div');
                                  categoriaDiv.innerText = categoriaNombre;
-                                 categoriaDiv.style.backgroundColor = '#e0e0e0';
+                                 // categoriaDiv.style.backgroundColor = '#e0e0e0';
+                                 categoriaDiv.style.backgroundColor = arg.event.extendedProps.color;
                                  categoriaDiv.style.color = '#333';
                                  categoriaDiv.style.fontWeight = 'bold';
                                  categoriaDiv.style.padding = '2px 4px';
@@ -217,9 +223,9 @@ const Calendario = () => {
                                  infoDiv.style.gap = '4px';
                                  infoDiv.style.padding = '2px 4px';
                                  infoDiv.innerHTML = `
-                                                      <span>${horaInicio}</span>
-                                                      <span>${emoji}</span>
-                                                      <strong>${arg.event.title}</strong>
+                                                      <span>${  arg.event.start?.toLocaleTimeString() }</span>
+                                                      <span>${ arg.event.extendedProps.icono }</span>
+                                                      <strong>${ arg.event.title }</strong>
                                                     `;
                          
                            container.appendChild(categoriaDiv);

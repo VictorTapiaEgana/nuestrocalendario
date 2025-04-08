@@ -89,4 +89,7 @@ export type EventoBackend = {
    categoria_evento_id: number;
    todoeldia: boolean;
    tipo_evento_nombre:string;
+   categoria_nombre:string;
+   categoria_color:string;
+   categoria_icono:string;
  }
