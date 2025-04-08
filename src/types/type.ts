@@ -82,7 +82,7 @@ export type EventoBackend = {
    hora_fin: string;   
    tipo_evento_id: number;
    usuario_id: number;
-   ubicacion: string | null;
+   ubicacion: string | "";
    estado: string;
    created_at: string;
    updated_at: string;
@@ -93,3 +93,22 @@ export type EventoBackend = {
    categoria_color:string;
    categoria_icono:string;
  }
+ export type EventoCalendario = {
+  id: string;
+  title: string;
+  start: string | Date;
+  end: string | Date;
+  allDay: boolean;
+  extendedProps: {
+    descripcion: string;
+    ubicacion: string;
+    estado: string;
+    tipo_evento_id: number | string;
+    usuario_id: number | string;
+    categoria_evento_id: number | string;
+    tipo_evento_nombre: string;
+    categoria_nombre: string;
+    color: string;
+    icono: string;
+  };
+};

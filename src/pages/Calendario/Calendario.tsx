@@ -6,12 +6,12 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 
 import interactionPlugin from "@fullcalendar/interaction" 
 import esLocale from '@fullcalendar/core/locales/es';
-import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, InputLabel, Typography } from '@mui/material';
+import { Box, Button, Checkbox, FormControlLabel, FormGroup, Typography } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { useThemeStore } from '../../store/useThemeStore'
 
 import './Calendario.css'
-import { EventoBackend } from '../../types/type'
+import { EventoBackend, EventoCalendario } from '../../types/type'
 
 type DateClickArg = Parameters<NonNullable<React.ComponentProps<typeof FullCalendar>['dateClick']>>[0];
 type DatesSetArg = Parameters<NonNullable<React.ComponentProps<typeof FullCalendar>['datesSet']>>[0];
@@ -19,7 +19,7 @@ type DatesSetArg = Parameters<NonNullable<React.ComponentProps<typeof FullCalend
 const Calendario = () => {
 
    //  const [ eventlist, setEventList ] = useState<EventInput[]>([]);
-   const [ eventlist, setEventList ] = useState<EventoBackend[]>([]);
+   const [ eventlist, setEventList ] = useState<EventoCalendario[]>([]);
    const [currentTitle, setCurrentTitle] = useState('');
    const [ isMobile , setIsMobile ] = useState<boolean>()  
    const [ showWeekends, setShowWeekends ] = useState<boolean>(false)
@@ -34,14 +34,14 @@ const Calendario = () => {
         const end = `${fechaBase}T${evento.hora_fin}`;
   
         return {
-               id: evento.id,
+               id: evento.id.toString(),
                title: evento.titulo,
                start,
                end,
                allDay: evento.todoeldia,
                extendedProps: {
                                descripcion: evento.descripcion,
-                               ubicacion: evento.ubicacion,
+                               ubicacion: evento.ubicacion ?? "",
                                estado: evento.estado,
                                tipo_evento_id: evento.tipo_evento_id,
                                usuario_id: evento.usuario_id,
@@ -65,10 +65,7 @@ const Calendario = () => {
 
       setEventList(eventosTransformados);
 
-      return eventos;
-
-   }
-    
+   }    
 
    useEffect(()=>{
 
@@ -197,7 +194,7 @@ const Calendario = () => {
                            // const emoji = arg.event.allDay ? '📅' : '🟢';
                          
                            const categoriaNombre = arg.event.extendedProps.tipo_evento_nombre || 'Sin categoría';
-                           const horaInicio = arg.timeText || ''; // texto de la hora ya formateado por FullCalendar
+                           // const horaInicio = arg.timeText || '';
                          
                            const container = document.createElement('div');
                                  container.style.width = '100%';
